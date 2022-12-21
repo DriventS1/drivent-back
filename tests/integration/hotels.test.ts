@@ -99,6 +99,7 @@ describe("GET /hotels", () => {
           id: createdHotel.id,
           name: createdHotel.name,
           image: createdHotel.image,
+          Rooms: [],
           createdAt: createdHotel.createdAt.toISOString(),
           updatedAt: createdHotel.updatedAt.toISOString()
         }
