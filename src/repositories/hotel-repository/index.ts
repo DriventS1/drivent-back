@@ -43,7 +43,7 @@ async function findBookingsByHotelId(hotelId: number) {
 const hotelRepository = {
   findHotels,
   findRoomsByHotelId,
-  findBookingsByHotelId
+  findBookingsByHotelId,
 };
 
 export default hotelRepository;

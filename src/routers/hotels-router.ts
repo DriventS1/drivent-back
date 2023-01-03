@@ -11,3 +11,4 @@ hotelsRouter
   .get("/:hotelId/vacancies", getHotelsWithBookings);
 
 export { hotelsRouter };
+

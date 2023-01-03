@@ -53,6 +53,7 @@ export async function getHotelsWithBookings(req: AuthenticatedRequest, res: Resp
     if (error.name === "cannotListHotelsError") {
       return res.sendStatus(httpStatus.PAYMENT_REQUIRED);
     }
+    
     return res.sendStatus(httpStatus.BAD_REQUEST);
   }
 }
