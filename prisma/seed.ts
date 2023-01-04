@@ -204,6 +204,136 @@ async function rooms() {
   console.log("Quartos criados com sucesso");
 }
 
+async function Local() {
+  const event = await prisma.local.findFirst();
+  if (!event) {
+    await prisma.local.createMany({
+      data: [
+        {
+          id: 1,
+          name: "Auditório Principal",
+          createdAt: "2022-12-16T02:12:42.501Z",
+          updatedAt: "2022-12-16T02:12:42.501Z"
+        },
+        {
+          id: 2,
+          name: "Auditório Lateral",
+          createdAt: "2022-12-16T02:12:42.501Z",
+          updatedAt: "2022-12-16T02:12:42.501Z"
+        },
+        {
+          id: 3,
+          name: "Sala de Workshop",
+          createdAt: "2022-12-16T02:12:42.501Z",
+          updatedAt: "2022-12-16T02:12:42.501Z"
+        }
+      ]
+    }
+    );
+  }
+
+  console.log("Locais criados com sucesso");
+}
+
+async function DateActivity() {
+  const event = await prisma.dateActivity.findFirst();
+  if (!event) {
+    await prisma.dateActivity.createMany({
+      data: [
+        {
+          id: 1,
+          date: "2023-01-16T02:12:42.501Z",
+          createdAt: "2022-12-16T02:12:42.501Z",
+          updatedAt: "2022-12-16T02:12:42.501Z"
+        },
+        {
+          id: 2,
+          date: "2023-01-17T02:12:42.501Z",
+          createdAt: "2022-12-16T02:12:42.501Z",
+          updatedAt: "2022-12-16T02:12:42.501Z"
+        },
+        {
+          id: 3,
+          date: "2023-01-18T02:12:42.501Z",
+          createdAt: "2022-12-16T02:12:42.501Z",
+          updatedAt: "2022-12-16T02:12:42.501Z"
+        }
+      ]
+    }
+    );
+  }
+
+  console.log("DateActivity criado com sucesso");
+}
+
+async function Activities() {
+  const event = await prisma.activities.findFirst();
+  if (!event) {
+    await prisma.activities.createMany({
+      data: [
+        {
+          id: 1,
+          name: 'Minecraft: montando o PC ideal',
+          capacity: 30,
+          startsAt: "2023-01-16T02:09:00.501Z",
+          endsAt: "2023-01-16T02:10:00.501Z",
+          dateId: 1,
+          localId: 1,
+          createdAt: "2022-12-16T02:12:42.501Z",
+          updatedAt: "2022-12-16T02:12:42.501Z"
+        },
+        {
+          id: 2,
+          name: 'LoL: montando o PC ideal',
+          capacity: 5,
+          startsAt: "2023-01-16T02:10:00.501Z",
+          endsAt: "2023-01-16T02:11:00.501Z",
+          dateId: 1,
+          localId: 1,
+          createdAt: "2022-12-16T02:12:42.501Z",
+          updatedAt: "2022-12-16T02:12:42.501Z"
+        },
+        {
+          id: 3,
+          name: 'Palestra x',
+          capacity: 35,
+          startsAt: "2023-01-16T02:09:00.501Z",
+          endsAt: "2023-01-16T02:11:00.501Z",
+          dateId: 1,
+          localId: 2,
+          createdAt: "2022-12-16T02:12:42.501Z",
+          updatedAt: "2022-12-16T02:12:42.501Z"
+        },
+        {
+          id: 4,
+          name: 'Palestra y',
+          capacity: 25,
+          startsAt: "2023-01-16T02:09:00.501Z",
+          endsAt: "2023-01-16T02:10:00.501Z",
+          dateId: 1,
+          localId: 3,
+          createdAt: "2022-12-16T02:12:42.501Z",
+          updatedAt: "2022-12-16T02:12:42.501Z"
+        },
+        {
+          id: 5,
+          name: 'Palestra z',
+          capacity: 15,
+          startsAt: "2023-01-16T02:10:00.501Z",
+          endsAt: "2023-01-16T02:11:00.501Z",
+          dateId: 1,
+          localId: 3,
+          createdAt: "2022-12-16T02:12:42.501Z",
+          updatedAt: "2022-12-16T02:12:42.501Z"
+        },
+      ]
+    }
+    );
+  }
+
+  console.log("Activities criado com sucesso");
+}
+
 main()
   .catch((e) => {
     console.error(e);
@@ -231,6 +361,29 @@ types()
     //await prisma.$disconnect();
   });
 
+  Local()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+  });
+
+  DateActivity()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+  });
+
+  Activities()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+  });
 rooms()
   .catch((e) => {
     console.error(e);
