@@ -14,7 +14,7 @@ async function checkEnrollmentAndTicket(userId: number) {
   //Tem ticket pago isOnline false e includesHotel true
   const ticket = await ticketRepository.findTicketByEnrollmentId(enrollment.id);
 
-  if (!ticket || ticket.status === "RESERVED" || ticket.TicketType.isRemote || !ticket.TicketType.includesHotel) {
+  if (!ticket || ticket.status === "RESERVED" || ticket.TicketType.isRemote) {
     throw cannotListHotelsError();
   }
 }
