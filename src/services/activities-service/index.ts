@@ -1,17 +1,15 @@
-import hotelRepository from "@/repositories/hotel-repository";
 import enrollmentRepository from "@/repositories/enrollment-repository";
 import ticketRepository from "@/repositories/ticket-repository";
 import { notFoundError } from "@/errors";
 import { cannotListHotelsError } from "@/errors/cannot-list-hotels-error";
 import activitiesRepository from "@/repositories/activities-repository";
+import localRepository from "@/repositories/local-repositiry";
 
 async function checkEnrollmentAndTicket(userId: number) {
-  //Tem enrollment?
   const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
   if (!enrollment) {
     throw notFoundError();
   }
-  //Tem ticket pago isOnline false e includesHotel true
   const ticket = await ticketRepository.findTicketByEnrollmentId(enrollment.id);
 
   if (!ticket || ticket.status === "RESERVED" || ticket.TicketType.isRemote) {
@@ -26,8 +24,16 @@ async function getDateActivities(userId: number) {
   return dateActivities;
 }
 
+async function getActivitiesByDateId(userId: number, dateId: number) {
+  await checkEnrollmentAndTicket(userId);
+
+  const activities = await localRepository.findActivitiesWithDateId(dateId);
+  return activities;
+}
+
 const activitiesService = {
   getDateActivities,
+  getActivitiesByDateId,
 };
 
 export default activitiesService;
