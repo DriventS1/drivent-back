@@ -24,3 +24,19 @@ export function createDateActivity() {
     ],
   });
 }
+
+export function createActivities() {
+  return prisma.activities.createMany({
+    data: [
+      {
+        id: 1,
+        name: "Palestra x",
+        capacity: 35,
+        dateId: 1,
+        localId: 2,
+        startsAt: "2022-12-16T02:10:00.501Z",
+        endsAt: "2022-12-16T02:40:00.501Z"
+      },
+    ]
+  });
+}
