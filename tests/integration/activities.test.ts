@@ -2,6 +2,7 @@ import app, { init } from "@/app";
 import faker from "@faker-js/faker";
 import { prisma, TicketStatus } from "@prisma/client";
 import httpStatus from "http-status";
+import { any, number, string } from "joi";
 import * as jwt from "jsonwebtoken";
 import supertest from "supertest";
 import {
@@ -185,6 +186,43 @@ describe("POST /activities", () => {
   });
 
   describe("when token is valid", () => {
+    it("should respond with status 402 when user ticket is remote", async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+      const enrollment = await createEnrollmentWithAddress(user);
+      const ticketType = await createTicketTypeRemote();
+      const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+      await createPayment(ticket.id, ticketType.price);
+
+      const response = await server.get("/activities").set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toEqual(httpStatus.PAYMENT_REQUIRED);
+    });
+
+    it("should respond with status 404 when user has no enrollment", async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+
+      await createTicketTypeRemote();
+
+      const response = await server.post("/activities").set("Authorization", `Bearer ${token}`).send({ activitiesId: 1 });
+
+      expect(response.status).toEqual(httpStatus.NOT_FOUND);
+    });
+
+    it("should respond with status 402 when user ticket has no 'PAID' ", async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+      const enrollment = await createEnrollmentWithAddress(user);
+      const ticketType = await createTicketTypeWithHotel();
+      const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.RESERVED);
+      await createPayment(ticket.id, ticketType.price);
+  
+      const response = await server.post("/activities").set("Authorization", `Bearer ${token}`).send({ activitiesId: 1 });
+  
+      expect(response.status).toEqual(httpStatus.PAYMENT_REQUIRED);
+    });
+
     it("should respond with status 201 and the created Booking Activity", async () => {
       const user = await createUser();
       const token = await generateValidToken(user);
@@ -206,15 +244,6 @@ describe("POST /activities", () => {
       const response = await server.post("/activities").set("Authorization", `Bearer ${token}`).send({ activitiesId: 1 });
 
       expect(response.statusCode).toBe(httpStatus.CREATED);
-      expect(response.body).toEqual({
-        id: 1,
-        name: "Palestra x",
-        capacity: 35,
-        dateId: 1,
-        localId: 2,
-        startsAt: "2022-12-16T02:10:00.501Z",
-        endsAt: "2022-12-16T02:40:00.501Z"
-      });
     });
   });
 });

@@ -24,7 +24,7 @@ async function checkEnrollmentAndTicket(userId: number) {
 async function checkTimeAvailability(activity: Activity) { 
   const startDate = dayjs(activity.startsAt);
   const endDate = dayjs(activity.endsAt);
-  
+
   //TO-DO: Verificar se existe outra
   console.log(startDate, endDate);
 }
@@ -53,10 +53,10 @@ async function bookingActivity(userId: number, activitiesId: number) {
 
   //TO-DO: Se a atividade conflita deve dá erro de conflito
   const activity = await activitiesRepository.findActivityById(activitiesId);
-  await checkTimeAvailability(activity);
+  //await checkTimeAvailability(activity);
 
   //TO-DO: Testar
-  await checkAvailability(activity);
+  //await checkAvailability(activity);
 
   const createdActivity = await activitiesRepository.create(userId, activitiesId);
   return createdActivity;

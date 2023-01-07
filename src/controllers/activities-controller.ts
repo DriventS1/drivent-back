@@ -37,5 +37,8 @@ export async function bookingActivity(req: AuthenticatedRequest, res: Response) 
     if (error.name === "ConflictError") {
       return res.sendStatus(httpStatus.CONFLICT);
     }
+    if (error.name === "cannotListHotelsError") {
+      return res.sendStatus(httpStatus.PAYMENT_REQUIRED);
+    }
   }
 }
