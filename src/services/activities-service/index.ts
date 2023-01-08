@@ -56,7 +56,7 @@ async function bookingActivity(userId: number, activitiesId: number) {
   //await checkTimeAvailability(activity);
 
   //TO-DO: Testar
-  //await checkAvailability(activity);
+  await checkAvailability(activity);
 
   const createdActivity = await activitiesRepository.create(userId, activitiesId);
   return createdActivity;

@@ -17,7 +17,8 @@ import {
   createHotel,
   createRoomWithHotelId,
   createBooking,
-  createActivities
+  createActivities,
+  createBookingActivity
 } from "../factories";
 import { createDateActivity } from "../factories/activities-factory";
 import { cleanDb, generateValidToken } from "../helpers";
@@ -186,6 +187,32 @@ describe("POST /activities", () => {
   });
 
   describe("when token is valid", () => {
+    it("should respond with status 401 when no vacancies", async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+      const enrollment = await createEnrollmentWithAddress(user);
+      const ticketType = await createTicketTypeWithHotel();
+      const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+      const payment = await createPayment(ticket.id, ticketType.price);
+
+      const createdHotel = await createHotel();
+      const room = await createRoomWithHotelId(createdHotel.id);
+      const booking = await createBooking({
+        userId: user.id,
+        roomId: room.id,
+      });
+
+      const dateActivities = await createDateActivity();
+      const activities = await createActivities();
+      //activitieId: 1
+      const otherUser = await createUser();
+      await createBookingActivity(otherUser.id, 1);
+
+      const response = await server.post("/activities").set("Authorization", `Bearer ${token}`).send({ activitiesId: 1 });
+
+      expect(response.statusCode).toBe(httpStatus.CONFLICT);
+    });
+
     it("should respond with status 402 when user ticket is remote", async () => {
       const user = await createUser();
       const token = await generateValidToken(user);

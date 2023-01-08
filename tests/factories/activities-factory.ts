@@ -31,12 +31,21 @@ export function createActivities() {
       {
         id: 1,
         name: "Palestra x",
-        capacity: 35,
+        capacity: 1,
         dateId: 1,
         localId: 2,
         startsAt: "2022-12-16T02:10:00.501Z",
         endsAt: "2022-12-16T02:40:00.501Z"
       },
     ]
+  });
+}
+
+export function createBookingActivity(userId: number, activitiesId: number) {
+  return prisma.bookingActivities.create({
+    data: {
+      userId,
+      activitiesId
+    }
   });
 }
