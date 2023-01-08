@@ -21,12 +21,23 @@ async function checkEnrollmentAndTicket(userId: number) {
   }
 }
 
-async function checkTimeAvailability(activity: Activity) { 
-  const startDate = dayjs(activity.startsAt);
-  const endDate = dayjs(activity.endsAt);
+async function checkIsCurrentEventActive(activity: Activity) {
+  const eventStartsAt = dayjs(activity.startsAt);
+  const eventEndsAt = dayjs(activity.endsAt);
+ 
+  const events = await activitiesRepository.listActivitiesByDateId(activity.dateId);
+  if (events.length === 0) {
+    return;
+  }
+  events.map(event => {
+    const firstActivitStarts = dayjs(event.startsAt);
+    const firstActivitEnds = dayjs(event.endsAt);
 
-  //TO-DO: Verificar se existe outra
-  console.log(startDate, endDate);
+    const hasConflict = firstActivitStarts.isAfter(eventStartsAt) && firstActivitEnds.isBefore(eventEndsAt);
+    if (hasConflict) {
+      throw conflictError("time conflict");
+    }
+  });
 }
 
 async function checkAvailability(activity: Activity) {
@@ -53,9 +64,7 @@ async function bookingActivity(userId: number, activitiesId: number) {
 
   //TO-DO: Se a atividade conflita deve dá erro de conflito
   const activity = await activitiesRepository.findActivityById(activitiesId);
-  //await checkTimeAvailability(activity);
-
-  //TO-DO: Testar
+  await checkIsCurrentEventActive(activity);
   await checkAvailability(activity);
 
   const createdActivity = await activitiesRepository.create(userId, activitiesId);

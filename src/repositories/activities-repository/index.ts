@@ -30,11 +30,20 @@ async function listSubscriptionsByActivityId(activitiesId: number) {
   });
 }
 
+async function listActivitiesByDateId(dateId: number) {
+  return prisma.activities.findMany({
+    where: {
+      dateId
+    }
+  });
+}
+
 const activitiesRepository = {
   findDateActivities,
   create,
   findActivityById,
-  listSubscriptionsByActivityId
+  listSubscriptionsByActivityId,
+  listActivitiesByDateId
 };
 
 export default activitiesRepository;
