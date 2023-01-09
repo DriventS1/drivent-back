@@ -27,7 +27,7 @@ async function checkIsCurrentEventActive(activity: Activity, userId: number) {
  
   const events = await activitiesRepository.listActivitiesByDateId(activity.dateId, userId);
   const eventsByUser = events.filter(event => event.BookingActivities.length > 0);
-  console.log(eventsByUser);
+  console.log(events);
   if (eventsByUser.length === 0) {
     return;
   }

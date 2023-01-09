@@ -21,7 +21,6 @@ async function findActivityById(activitiesId: number) {
   });
 }
 
-//Pegar um array de inscrições na atividade
 async function listSubscriptionsByActivityId(activitiesId: number) {
   return prisma.bookingActivities.findMany({
     where: {
@@ -33,12 +32,12 @@ async function listSubscriptionsByActivityId(activitiesId: number) {
 async function listActivitiesByDateId(dateId: number, userId: number) {
   return prisma.activities.findMany({
     where: {
-      dateId
+      dateId,
     },
     include: {
       BookingActivities: {
-        select: {
-          userId: true
+        where: {
+          userId
         }
       }
     }
