@@ -37,6 +37,15 @@ export function createActivities() {
         startsAt: "2022-12-16T02:10:00.501Z",
         endsAt: "2022-12-16T02:40:00.501Z"
       },
+      {
+        id: 2,
+        name: "Palestra y",
+        capacity: 1,
+        dateId: 1,
+        localId: 2,
+        startsAt: "2022-12-16T02:15:00.501Z",
+        endsAt: "2022-12-16T02:45:00.501Z"
+      },
     ]
   });
 }

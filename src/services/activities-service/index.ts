@@ -21,19 +21,21 @@ async function checkEnrollmentAndTicket(userId: number) {
   }
 }
 
-async function checkIsCurrentEventActive(activity: Activity) {
+async function checkIsCurrentEventActive(activity: Activity, userId: number) {
   const eventStartsAt = dayjs(activity.startsAt);
   const eventEndsAt = dayjs(activity.endsAt);
  
-  const events = await activitiesRepository.listActivitiesByDateId(activity.dateId);
-  if (events.length === 0) {
+  const events = await activitiesRepository.listActivitiesByDateId(activity.dateId, userId);
+  const eventsByUser = events.filter(event => event.BookingActivities.length > 0);
+  console.log(eventsByUser);
+  if (eventsByUser.length === 0) {
     return;
   }
-  events.map(event => {
+  eventsByUser.map(event => {
     const firstActivitStarts = dayjs(event.startsAt);
     const firstActivitEnds = dayjs(event.endsAt);
 
-    const hasConflict = firstActivitStarts.isAfter(eventStartsAt) && firstActivitEnds.isBefore(eventEndsAt);
+    const hasConflict = (firstActivitStarts.isAfter(eventStartsAt) && firstActivitStarts.isBefore(eventEndsAt)) || (firstActivitEnds.isAfter(eventStartsAt) && firstActivitEnds.isBefore(eventEndsAt));
     if (hasConflict) {
       throw conflictError("time conflict");
     }
@@ -62,9 +64,11 @@ async function bookingActivity(userId: number, activitiesId: number) {
   }
   await checkEnrollmentAndTicket(userId);
 
-  //TO-DO: Se a atividade conflita deve dá erro de conflito
   const activity = await activitiesRepository.findActivityById(activitiesId);
-  await checkIsCurrentEventActive(activity);
+  if (!activity) {
+    throw notFoundError();
+  }
+  await checkIsCurrentEventActive(activity, userId);
   await checkAvailability(activity);
 
   const createdActivity = await activitiesRepository.create(userId, activitiesId);

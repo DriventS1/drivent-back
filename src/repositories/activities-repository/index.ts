@@ -30,10 +30,17 @@ async function listSubscriptionsByActivityId(activitiesId: number) {
   });
 }
 
-async function listActivitiesByDateId(dateId: number) {
+async function listActivitiesByDateId(dateId: number, userId: number) {
   return prisma.activities.findMany({
     where: {
       dateId
+    },
+    include: {
+      BookingActivities: {
+        select: {
+          userId: true
+        }
+      }
     }
   });
 }

@@ -187,7 +187,52 @@ describe("POST /activities", () => {
   });
 
   describe("when token is valid", () => {
-    it("should respond with status 401 when no vacancies", async () => {
+    it("should response with status 409 when have time conflict", async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+      const enrollment = await createEnrollmentWithAddress(user);
+      const ticketType = await createTicketTypeWithHotel();
+      const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+      const payment = await createPayment(ticket.id, ticketType.price);
+
+      const createdHotel = await createHotel();
+      const room = await createRoomWithHotelId(createdHotel.id);
+      const booking = await createBooking({
+        userId: user.id,
+        roomId: room.id,
+      });
+
+      const dateActivities = await createDateActivity();
+      const activities = await createActivities();
+      const bookingActivity = await createBookingActivity(user.id, 1);
+
+      const response = await server.post("/activities").set("Authorization", `Bearer ${token}`).send({ activitiesId: 2 });
+
+      expect(response.statusCode).toBe(httpStatus.CONFLICT);
+    });
+
+    it("should respond with status 404 when there is no activity", async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+      const enrollment = await createEnrollmentWithAddress(user);
+      const ticketType = await createTicketTypeWithHotel();
+      const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+      const payment = await createPayment(ticket.id, ticketType.price);
+
+      const createdHotel = await createHotel();
+      const room = await createRoomWithHotelId(createdHotel.id);
+      const booking = await createBooking({
+        userId: user.id,
+        roomId: room.id,
+      });
+      const dateActivities = await createDateActivity();
+
+      const response = await server.post("/activities").set("Authorization", `Bearer ${token}`).send({ activitiesId: 1 });
+
+      expect(response.statusCode).toBe(httpStatus.NOT_FOUND);
+    });
+
+    it("should respond with status 409 when no vacancies", async () => {
       const user = await createUser();
       const token = await generateValidToken(user);
       const enrollment = await createEnrollmentWithAddress(user);
