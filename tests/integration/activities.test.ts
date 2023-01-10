@@ -254,7 +254,7 @@ describe("POST /activities", () => {
       const otherUser = await createUser();
       await createBookingActivity(otherUser.id, 10);
 
-      const response = await server.post("/activities").set("Authorization", `Bearer ${token}`).send({ activitiesId: 11 });
+      const response = await server.post("/activities").set("Authorization", `Bearer ${token}`).send({ activitiesId: 10 });
 
       expect(response.statusCode).toBe(httpStatus.CONFLICT);
     });

@@ -43,7 +43,6 @@ async function checkIsCurrentEventActive(activity: Activity, userId: number) {
 async function checkAvailability(activity: Activity) {
   const capacity = activity.capacity;
   const subscriptions = await activitiesRepository.listSubscriptionsByActivityId(activity.id);
-  console.log(subscriptions);
   if (subscriptions.length >= capacity) {
     throw conflictError("no vacancies");
   }
