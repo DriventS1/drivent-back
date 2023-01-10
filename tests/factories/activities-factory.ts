@@ -25,6 +25,15 @@ export function createDateActivity() {
   });
 }
 
+export function createBookingActivity(userId: number, activitiesId: number) {
+  return prisma.bookingActivities.create({
+    data: {
+      userId,
+      activitiesId
+    }
+  });
+}
+
 export function createActivities() {
   return prisma.activities.createMany({
     data: [
@@ -43,8 +52,8 @@ export function createActivities() {
         id: 2,
         name: "LoL: montando o PC ideal",
         capacity: 5,
-        startsAt: "2023-01-16T02:10:00.501Z",
-        endsAt: "2023-01-16T02:11:00.501Z",
+        startsAt: "2023-01-16T02:09:30.501Z",
+        endsAt: "2023-01-16T02:10:30.501Z",
         dateId: 1,
         localId: 1,
         createdAt: "2022-12-16T02:12:42.501Z",
@@ -108,3 +117,38 @@ export function createActivities() {
     ],
   });
 }
+
+export function createActivitiesWithConflict() {
+  return prisma.activities.createMany({
+    data: [
+      {
+        id: 10,
+        name: "Palestra x",
+        capacity: 1,
+        dateId: 1,
+        localId: 1,
+        startsAt: "2022-12-16T02:10:00.501Z",
+        endsAt: "2022-12-16T02:40:00.501Z"
+      },
+      {
+        id: 11,
+        name: "Palestra y",
+        capacity: 1,
+        dateId: 1,
+        localId: 2,
+        startsAt: "2022-12-16T02:15:00.501Z",
+        endsAt: "2022-12-16T02:45:00.501Z"
+      },
+      {
+        id: 12,
+        name: "Palestra z",
+        capacity: 1,
+        dateId: 1,
+        localId: 1,
+        startsAt: "2022-12-16T02:15:00.501Z",
+        endsAt: "2022-12-16T02:45:00.501Z"
+      },
+    ]
+  });
+}
+

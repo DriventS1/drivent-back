@@ -1,3 +1,5 @@
+import { number, string } from "joi";
+
 export type ApplicationError = {
   name: string;
   message: string;
@@ -29,4 +31,16 @@ export type RequestError = {
   statusText: string,
   name: string,
   message: string,
+};
+
+export type Activity = {
+  id: number,
+  name: string,
+  capacity: number,
+  startsAt: Date,
+  endsAt: Date,
+  dateId: number,
+  localId: number,
+  createdAt: Date,
+  updatedAt: Date
 };

@@ -1,7 +1,8 @@
 import app, { init } from "@/app";
 import faker from "@faker-js/faker";
-import { TicketStatus } from "@prisma/client";
+import { prisma, TicketStatus } from "@prisma/client";
 import httpStatus from "http-status";
+import { any, number, string } from "joi";
 import * as jwt from "jsonwebtoken";
 import supertest from "supertest";
 import {
@@ -14,9 +15,12 @@ import {
   createHotel,
   createRoomWithHotelId,
   createBooking,
+  createBookingActivity,
+  createDateActivity,
+  createActivities,
   createLocal,
+  createActivitiesWithConflict
 } from "../factories";
-import { createActivities, createDateActivity } from "../factories/activities-factory";
 import { cleanDb, generateValidToken } from "../helpers";
 
 beforeAll(async () => {
@@ -158,6 +162,166 @@ describe("GET /activities", () => {
   });
 });
 
+describe("POST /activities", () => {
+  it("should respond with status 401 if no token is given", async () => {
+    const response = await server.post("/activities");
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  it("should respond with status 401 if given token is not valid", async () => {
+    const token = faker.lorem.word();
+
+    const response = await server.post("/activities").set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  it("should respond with status 401 if there is no session for given token", async () => {
+    const userWithoutSession = await createUser();
+    const token = jwt.sign({ userId: userWithoutSession.id }, process.env.JWT_SECRET);
+
+    const response = await server.post("/activities").set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  describe("when token is valid", () => {
+    it("should response with status 409 when have time conflict", async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+      const enrollment = await createEnrollmentWithAddress(user);
+      const ticketType = await createTicketTypeWithHotel();
+      const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+      const payment = await createPayment(ticket.id, ticketType.price);
+
+      const createdHotel = await createHotel();
+      const room = await createRoomWithHotelId(createdHotel.id);
+      const booking = await createBooking({
+        userId: user.id,
+        roomId: room.id,
+      });
+
+      const dateActivities = await createDateActivity();
+      const locals = await createLocal();
+      const activities = await createActivitiesWithConflict();
+      const bookingActivity = await createBookingActivity(user.id, 10);
+      //console.log(activities);
+      const response = await server.post("/activities").set("Authorization", `Bearer ${token}`).send({ activitiesId: 11 });
+
+      expect(response.statusCode).toBe(httpStatus.CONFLICT);
+    });
+
+    it("should respond with status 404 when there is no activity", async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+      const enrollment = await createEnrollmentWithAddress(user);
+      const ticketType = await createTicketTypeWithHotel();
+      const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+      const payment = await createPayment(ticket.id, ticketType.price);
+
+      const createdHotel = await createHotel();
+      const room = await createRoomWithHotelId(createdHotel.id);
+      const booking = await createBooking({
+        userId: user.id,
+        roomId: room.id,
+      });
+
+      const response = await server.post("/activities").set("Authorization", `Bearer ${token}`).send({ activitiesId: 8 });
+      
+      expect(response.statusCode).toBe(httpStatus.NOT_FOUND);
+    });
+
+    it("should respond with status 409 when no vacancies", async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+      const enrollment = await createEnrollmentWithAddress(user);
+      const ticketType = await createTicketTypeWithHotel();
+      const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+      const payment = await createPayment(ticket.id, ticketType.price);
+
+      const createdHotel = await createHotel();
+      const room = await createRoomWithHotelId(createdHotel.id);
+      const booking = await createBooking({
+        userId: user.id,
+        roomId: room.id,
+      });
+
+      const dateActivities = await createDateActivity();
+      const locals = await createLocal();
+      const activities = await createActivitiesWithConflict();
+      //activitieId: 1
+      const otherUser = await createUser();
+      await createBookingActivity(otherUser.id, 10);
+
+      const response = await server.post("/activities").set("Authorization", `Bearer ${token}`).send({ activitiesId: 10 });
+
+      expect(response.statusCode).toBe(httpStatus.CONFLICT);
+    });
+
+    it("should respond with status 402 when user ticket is remote", async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+      const enrollment = await createEnrollmentWithAddress(user);
+      const ticketType = await createTicketTypeRemote();
+      const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+      await createPayment(ticket.id, ticketType.price);
+
+      const response = await server.get("/activities").set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toEqual(httpStatus.PAYMENT_REQUIRED);
+    });
+
+    it("should respond with status 404 when user has no enrollment", async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+
+      await createTicketTypeRemote();
+
+      const response = await server.post("/activities").set("Authorization", `Bearer ${token}`).send({ activitiesId: 1 });
+
+      expect(response.status).toEqual(httpStatus.NOT_FOUND);
+    });
+
+    it("should respond with status 402 when user ticket has no 'PAID' ", async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+      const enrollment = await createEnrollmentWithAddress(user);
+      const ticketType = await createTicketTypeWithHotel();
+      const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.RESERVED);
+      await createPayment(ticket.id, ticketType.price);
+  
+      const response = await server.post("/activities").set("Authorization", `Bearer ${token}`).send({ activitiesId: 1 });
+  
+      expect(response.status).toEqual(httpStatus.PAYMENT_REQUIRED);
+    });
+
+    it("should respond with status 201 and the created Booking Activity", async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+      const enrollment = await createEnrollmentWithAddress(user);
+      const ticketType = await createTicketTypeWithHotel();
+      const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+      const payment = await createPayment(ticket.id, ticketType.price);
+
+      const createdHotel = await createHotel();
+      const room = await createRoomWithHotelId(createdHotel.id);
+      const booking = await createBooking({
+        userId: user.id,
+        roomId: room.id,
+      });
+
+      const dateActivities = await createDateActivity();
+      const locals = await createLocal();
+      const activities = await createActivities();
+      //activitieId: 1
+      const response = await server.post("/activities").set("Authorization", `Bearer ${token}`).send({ activitiesId: 1 });
+
+      expect(response.statusCode).toBe(httpStatus.CREATED);
+    });
+  });
+});
+
 describe("GET /activities/:dateId", () => {
   it("should respond with status 401 if no token is given", async () => {
     const response = await server.get("/activities/1");
@@ -289,8 +453,8 @@ describe("GET /activities/:dateId", () => {
               id: 2,
               name: "LoL: montando o PC ideal",
               capacity: 5,
-              startsAt: "2023-01-16T02:10:00.501Z",
-              endsAt: "2023-01-16T02:11:00.501Z",
+              startsAt: "2023-01-16T02:09:30.501Z",
+              endsAt: "2023-01-16T02:10:30.501Z",
               dateId: 1,
               localId: 1,
               createdAt: "2022-12-16T02:12:42.501Z",

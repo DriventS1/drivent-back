@@ -20,6 +20,29 @@ export async function listDateActivities(req: AuthenticatedRequest, res: Respons
   }
 }
 
+export async function bookingActivity(req: AuthenticatedRequest, res: Response) {
+  const { userId } = req;
+
+  try {
+    const activitiesId = req.body.activitiesId as number;
+    const createdActivity = await activitiesService.bookingActivity(userId, Number(activitiesId));
+    return res.status(httpStatus.CREATED).send(createdActivity);
+  } catch (error) {
+    if (error.name === "RequestError") {
+      return res.sendStatus(httpStatus.BAD_REQUEST);
+    }
+    if (error.name === "ConflictError") {
+      return res.sendStatus(httpStatus.CONFLICT);
+    }
+    if (error.name === "cannotListHotelsError") {
+      return res.sendStatus(httpStatus.PAYMENT_REQUIRED);
+    }
+    if (error.name === "NotFoundError") {
+      return res.sendStatus(httpStatus.NOT_FOUND);
+    }
+  }
+}
+
 export async function getActivities(req: AuthenticatedRequest, res: Response) {
   const { userId } = req;
   const { dateId } = req.params;
@@ -38,3 +61,4 @@ export async function getActivities(req: AuthenticatedRequest, res: Response) {
     return res.sendStatus(httpStatus.BAD_REQUEST);
   }
 }
+
