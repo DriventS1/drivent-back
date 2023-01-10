@@ -1,4 +1,3 @@
-import hotelRepository from "@/repositories/hotel-repository";
 import enrollmentRepository from "@/repositories/enrollment-repository";
 import ticketRepository from "@/repositories/ticket-repository";
 import { notFoundError, requestError, conflictError } from "@/errors";
@@ -6,14 +5,13 @@ import { cannotListHotelsError } from "@/errors/cannot-list-hotels-error";
 import activitiesRepository from "@/repositories/activities-repository";
 import { Activity } from "@/protocols";
 import dayjs from "dayjs";
+import localRepository from "@/repositories/local-repositiry";
 
 async function checkEnrollmentAndTicket(userId: number) {
-  //Tem enrollment?
   const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
   if (!enrollment) {
     throw notFoundError();
   }
-  //Tem ticket pago isOnline false e includesHotel true
   const ticket = await ticketRepository.findTicketByEnrollmentId(enrollment.id);
 
   if (!ticket || ticket.status === "RESERVED" || ticket.TicketType.isRemote) {
@@ -27,7 +25,7 @@ async function checkIsCurrentEventActive(activity: Activity, userId: number) {
  
   const events = await activitiesRepository.listActivitiesByDateId(activity.dateId, userId);
   const eventsByUser = events.filter(event => event.BookingActivities.length > 0);
-  console.log(events);
+  
   if (eventsByUser.length === 0) {
     return;
   }
@@ -45,7 +43,7 @@ async function checkIsCurrentEventActive(activity: Activity, userId: number) {
 async function checkAvailability(activity: Activity) {
   const capacity = activity.capacity;
   const subscriptions = await activitiesRepository.listSubscriptionsByActivityId(activity.id);
-
+  console.log(subscriptions);
   if (subscriptions.length >= capacity) {
     throw conflictError("no vacancies");
   }
@@ -75,9 +73,17 @@ async function bookingActivity(userId: number, activitiesId: number) {
   return createdActivity;
 }
 
+async function getActivitiesByDateId(userId: number, dateId: number) {
+  await checkEnrollmentAndTicket(userId);
+
+  const activities = await localRepository.findActivitiesWithDateId(dateId);
+  return activities;
+}
+
 const activitiesService = {
   getDateActivities,
-  bookingActivity
+  bookingActivity,
+  getActivitiesByDateId,
 };
 
 export default activitiesService;
