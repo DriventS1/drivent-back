@@ -7,6 +7,9 @@ async function findActivitiesWithDateId(dateId: number) {
         where: {
           dateId,
         },
+        include: {
+          BookingActivities: true
+        }
       },
     },
   });
