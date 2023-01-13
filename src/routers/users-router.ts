@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { createUserSchema, createUserGitHubSchema } from "@/schemas";
+import { createUserSchema } from "@/schemas";
 import { validateBody } from "@/middlewares";
 import { usersPost, getGitHubUser } from "@/controllers";
 import { oAuthSignIn } from "@/controllers/oAuth.controller";

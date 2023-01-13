@@ -26,7 +26,7 @@ export async function createUserWithGitHub({ email }: CreateUserWithGitHubParams
   });
 }
 
-async function validateUniqueEmailOrFail(email: string) {
+export async function validateUniqueEmailOrFail(email: string) {
   const userWithSameEmail = await userRepository.findByEmail(email);
   if (userWithSameEmail) {
     throw duplicatedEmailError();

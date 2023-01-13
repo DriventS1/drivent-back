@@ -27,7 +27,7 @@ export async function getGitHubUser(req: Request, res: Response) {
       const token = await exchangeCodeForAccessToken(codeParam);
       const userData = await fetchUser(token);
       const email = userData.email;
-      //const user = await userService.createUserWithGitHub({ email });
+      
       return res.status(httpStatus.OK).send(email);
     } catch (error) {
       if(error.name === "DuplicatedEmailError") {
