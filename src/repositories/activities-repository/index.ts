@@ -15,7 +15,7 @@ async function findDateActivities() {
 
 async function create(userId: number, activitiesId: number, dateId: number) {
   await redisClient.del(`dateId: ${dateId}`);
-  
+
   return prisma.bookingActivities.create({
     data: {
       userId,
