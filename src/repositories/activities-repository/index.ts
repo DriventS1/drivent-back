@@ -1,10 +1,21 @@
 import { prisma } from "@/config";
+import { redisClient } from "@/config";
 
-async function findDateActivities() { 
-  return prisma.dateActivity.findMany();
+async function findDateActivities() {
+  const dateActivities = await redisClient.get("dateActivities");
+
+  if (!dateActivities) {
+    const dateWithActivities = await prisma.dateActivity.findMany();
+    await redisClient.set("dateActivities", JSON.stringify(dateWithActivities));
+    return dateWithActivities;
+  }
+
+  return JSON.parse(dateActivities);
 } 
 
-async function create(userId: number, activitiesId: number) {
+async function create(userId: number, activitiesId: number, dateId: number) {
+  await redisClient.del(`dateId: ${dateId}`);
+
   return prisma.bookingActivities.create({
     data: {
       userId,

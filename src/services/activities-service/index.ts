@@ -56,7 +56,7 @@ async function getDateActivities(userId: number) {
 }
 
 async function bookingActivity(userId: number, activitiesId: number) {
-  if (userId < 1 || activitiesId < 1) {
+  if (userId < 1 || activitiesId < 1 || isNaN(activitiesId)) {
     throw requestError(400, "BAD_REQUEST");
   }
   await checkEnrollmentAndTicket(userId);
@@ -68,7 +68,7 @@ async function bookingActivity(userId: number, activitiesId: number) {
   await checkIsCurrentEventActive(activity, userId);
   await checkAvailability(activity);
 
-  const createdActivity = await activitiesRepository.create(userId, activitiesId);
+  const createdActivity = await activitiesRepository.create(userId, activitiesId, activity.dateId);
   return createdActivity;
 }
 
