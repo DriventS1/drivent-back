@@ -5,3 +5,7 @@ export const signInSchema = Joi.object<SignInParams>({
   email: Joi.string().email().required(),
   password: Joi.string().required(),
 });
+
+export const signInWithGitHubSchema = Joi.object<SignInParams>({
+  email: Joi.string().email().required()
+});

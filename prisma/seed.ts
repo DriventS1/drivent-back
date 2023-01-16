@@ -273,7 +273,7 @@ async function Activities() {
       data: [
         {
           id: 1,
-          name: 'Minecraft: montando o PC ideal',
+          name: "Minecraft: montando o PC ideal",
           capacity: 30,
           startsAt: "2023-01-16T02:09:00.501Z",
           endsAt: "2023-01-16T02:10:00.501Z",
@@ -284,7 +284,7 @@ async function Activities() {
         },
         {
           id: 2,
-          name: 'LoL: montando o PC ideal',
+          name: "LoL: montando o PC ideal",
           capacity: 5,
           startsAt: "2023-01-16T02:10:00.501Z",
           endsAt: "2023-01-16T02:11:00.501Z",
@@ -295,7 +295,7 @@ async function Activities() {
         },
         {
           id: 3,
-          name: 'Palestra x',
+          name: "Palestra x",
           capacity: 35,
           startsAt: "2023-01-16T02:09:00.501Z",
           endsAt: "2023-01-16T02:11:00.501Z",
@@ -306,7 +306,7 @@ async function Activities() {
         },
         {
           id: 4,
-          name: 'Palestra y',
+          name: "Palestra y",
           capacity: 25,
           startsAt: "2023-01-16T02:09:00.501Z",
           endsAt: "2023-01-16T02:10:00.501Z",
@@ -317,7 +317,7 @@ async function Activities() {
         },
         {
           id: 5,
-          name: 'Palestra z',
+          name: "Palestra z",
           capacity: 15,
           startsAt: "2023-01-16T02:10:00.501Z",
           endsAt: "2023-01-16T02:11:00.501Z",
@@ -383,23 +383,23 @@ types()
     //await prisma.$disconnect();
   });
 
-  Local()
+Local()
   .catch((e) => {
     console.error(e);
     process.exit(1);
   })
   .finally(async () => {
-  });
+});
 
-  DateActivity()
+DateActivity()
   .catch((e) => {
     console.error(e);
     process.exit(1);
   })
   .finally(async () => {
-  });
+});
 
-  Activities()
+Activities()
   .catch((e) => {
     console.error(e);
     process.exit(1);
