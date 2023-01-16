@@ -212,6 +212,7 @@ describe("GET /hotels/:hotelId", () => {
         createdAt: createdHotel.createdAt.toISOString(),
         updatedAt: createdHotel.updatedAt.toISOString(),
         Rooms: [{
+          Booking: [],
           id: createdRoom.id,
           name: createdRoom.name,
           capacity: createdRoom.capacity,

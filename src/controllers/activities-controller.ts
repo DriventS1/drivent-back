@@ -19,3 +19,48 @@ export async function listDateActivities(req: AuthenticatedRequest, res: Respons
     return res.sendStatus(httpStatus.BAD_REQUEST);
   }
 }
+
+export async function bookingActivity(req: AuthenticatedRequest, res: Response) {
+  const { userId } = req;
+
+  try {
+    const activitiesId = req.body.activitiesId as number;
+    const createdActivity = await activitiesService.bookingActivity(userId, Number(activitiesId));
+    return res.status(httpStatus.CREATED).send(createdActivity);
+  } catch (error) {
+    if (error.name === "RequestError") {
+      return res.sendStatus(httpStatus.BAD_REQUEST);
+    }
+    if (error.name === "ConflictError") {
+      return res.sendStatus(httpStatus.CONFLICT);
+    }
+    if (error.name === "cannotListHotelsError") {
+      return res.sendStatus(httpStatus.PAYMENT_REQUIRED);
+    }
+    if (error.name === "NotFoundError") {
+      return res.sendStatus(httpStatus.NOT_FOUND);
+    }
+    console.log(error);
+    return res.sendStatus(httpStatus.BAD_REQUEST);
+  }
+}
+
+export async function getActivities(req: AuthenticatedRequest, res: Response) {
+  const { userId } = req;
+  const { dateId } = req.params;
+
+  try {
+    const activities = await activitiesService.getActivitiesByDateId(userId, Number(dateId));
+
+    return res.status(httpStatus.OK).send(activities);
+  } catch (error) {
+    if (error.name === "NotFoundError") {
+      return res.sendStatus(httpStatus.NOT_FOUND);
+    }
+    if (error.name === "cannotListHotelsError") {
+      return res.sendStatus(httpStatus.PAYMENT_REQUIRED);
+    }
+    return res.sendStatus(httpStatus.BAD_REQUEST);
+  }
+}
+
