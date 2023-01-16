@@ -1,14 +1,14 @@
 import { Router } from "express";
 import { authenticateToken } from "@/middlewares";
-import { listDateActivities } from "@/controllers/activities-controller";
+import { listDateActivities, bookingActivity, getActivities } from "@/controllers/activities-controller";
 
 const activitiesRouter = Router();
 
 activitiesRouter
   .all("/*", authenticateToken)
-  .get("", listDateActivities);
-//   .get("/:roomId", getRoomBookings)
-//   .post("", bookingRoom)
-//   .put("/:bookingId", changeBooking);
+  .get("", listDateActivities)
+  .post("", bookingActivity)
+  .get("/:dateId", getActivities);
 
 export { activitiesRouter };
+ 

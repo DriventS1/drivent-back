@@ -326,6 +326,28 @@ async function Activities() {
           createdAt: "2022-12-16T02:12:42.501Z",
           updatedAt: "2022-12-16T02:12:42.501Z"
         },
+        {
+          id: 6,
+          name: 'Minecraft: montando o PC ideal',
+          capacity: 30,
+          startsAt: "2023-01-17T02:09:00.501Z",
+          endsAt: "2023-01-16T02:10:00.501Z",
+          dateId: 2,
+          localId: 1,
+          createdAt: "2022-12-16T02:12:42.501Z",
+          updatedAt: "2022-12-16T02:12:42.501Z"
+        },
+        {
+          id: 7,
+          name: 'LoL: montando o PC ideal',
+          capacity: 5,
+          startsAt: "2023-01-17T02:10:00.501Z",
+          endsAt: "2023-01-16T02:11:00.501Z",
+          dateId: 2,
+          localId: 1,
+          createdAt: "2022-12-16T02:12:42.501Z",
+          updatedAt: "2022-12-16T02:12:42.501Z"
+        },
       ]
     }
     );

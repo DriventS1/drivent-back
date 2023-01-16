@@ -7,3 +7,4 @@ export * from "./payments-factory";
 export * from "./hotels-factory";
 export * from "./booking-factory";
 export * from "./activities-factory";
+export * from "./local-factory";
