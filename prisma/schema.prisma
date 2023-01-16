@@ -141,11 +141,13 @@ model Booking {
 }
 
 model DateActivity {
-  id        Int      @id @default(autoincrement())
+  id        Int      @id @default(autoincrement()) 
   date      DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   Activities Activities[]
+
+  @@index([id])
 }
 
 model Local {
@@ -163,12 +165,14 @@ model Activities {
   startsAt            DateTime
   endsAt              DateTime
   DateActivity        DateActivity  @relation(fields: [dateId], references: [id])
-  dateId              Int
+  dateId              Int           @unique
   Local               Local         @relation(fields: [localId], references: [id])
   localId             Int
   createdAt           DateTime      @default(now())
   updatedAt           DateTime      @updatedAt
   BookingActivities  BookingActivities[]
+
+  @@index([dateId])
 }
 
 model BookingActivities {
