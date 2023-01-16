@@ -7,10 +7,8 @@ import supertest from "supertest";
 import {
   createEnrollmentWithAddress,
   createUser,
-  createTicketType,
   createTicket,
   createPayment,
-  generateCreditCardData,
   createTicketTypeWithHotel,
   createTicketTypeRemote,
   createHotel,
@@ -98,16 +96,16 @@ describe("GET /activities", () => {
       const enrollment = await createEnrollmentWithAddress(user);
       const ticketType = await createTicketTypeWithHotel();
       const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-      const payment = await createPayment(ticket.id, ticketType.price);
+      await createPayment(ticket.id, ticketType.price);
 
       const createdHotel = await createHotel();
       const room = await createRoomWithHotelId(createdHotel.id);
-      const booking = await createBooking({
+      await createBooking({
         userId: user.id,
         roomId: room.id,
       });
 
-      const dateActivities = await createDateActivity();
+      await createDateActivity();
       
       const response = await server.get("/activities").set("Authorization", `Bearer ${token}`);
 
@@ -141,11 +139,11 @@ describe("GET /activities", () => {
       const enrollment = await createEnrollmentWithAddress(user);
       const ticketType = await createTicketTypeWithHotel();
       const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-      const payment = await createPayment(ticket.id, ticketType.price);
+      await createPayment(ticket.id, ticketType.price);
 
       const createdHotel = await createHotel();
       const room = await createRoomWithHotelId(createdHotel.id);
-      const booking = await createBooking({
+      await createBooking({
         userId: user.id,
         roomId: room.id,
       });

@@ -30,14 +30,11 @@ export async function getGitHubUser(req: Request, res: Response) {
       
       return res.status(httpStatus.OK).send(email);
     } catch (error) {
-      if(error.name === "DuplicatedEmailError") {
-        return res.sendStatus(httpStatus.CONFLICT);
-      }
-      return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error);
+      return res.status(httpStatus.BAD_REQUEST).send(error);
     }
   }
 }
-  
+
 async function exchangeCodeForAccessToken(code: string) {
   const { REDIRECT_URL, CLIENT_ID, CLIENT_SECRET } = process.env;
   const PARAMS = `?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&code=${code}`; 
@@ -68,5 +65,6 @@ async function fetchUser(token: string) {
       "Authorization": `Bearer ${token}`
     }
   });
+
   return response.data;
 }
