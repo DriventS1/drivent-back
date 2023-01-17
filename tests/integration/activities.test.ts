@@ -1,8 +1,7 @@
 import app, { init } from "@/app";
 import faker from "@faker-js/faker";
-import { prisma, TicketStatus } from "@prisma/client";
+import { TicketStatus } from "@prisma/client";
 import httpStatus from "http-status";
-import { any, number, string } from "joi";
 import * as jwt from "jsonwebtoken";
 import supertest from "supertest";
 import {
@@ -193,20 +192,20 @@ describe("POST /activities", () => {
       const enrollment = await createEnrollmentWithAddress(user);
       const ticketType = await createTicketTypeWithHotel();
       const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-      const payment = await createPayment(ticket.id, ticketType.price);
+      await createPayment(ticket.id, ticketType.price);
 
       const createdHotel = await createHotel();
       const room = await createRoomWithHotelId(createdHotel.id);
-      const booking = await createBooking({
+      await createBooking({
         userId: user.id,
         roomId: room.id,
       });
 
-      const dateActivities = await createDateActivity();
-      const locals = await createLocal();
-      const activities = await createActivitiesWithConflict();
-      const bookingActivity = await createBookingActivity(user.id, 10);
-      //console.log(activities);
+      await createDateActivity();
+      await createLocal();
+      await createActivitiesWithConflict();
+      await createBookingActivity(user.id, 10);
+
       const response = await server.post("/activities").set("Authorization", `Bearer ${token}`).send({ activitiesId: 11 });
 
       expect(response.statusCode).toBe(httpStatus.CONFLICT);
@@ -238,19 +237,18 @@ describe("POST /activities", () => {
       const enrollment = await createEnrollmentWithAddress(user);
       const ticketType = await createTicketTypeWithHotel();
       const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-      const payment = await createPayment(ticket.id, ticketType.price);
+      await createPayment(ticket.id, ticketType.price);
 
       const createdHotel = await createHotel();
       const room = await createRoomWithHotelId(createdHotel.id);
-      const booking = await createBooking({
+      await createBooking({
         userId: user.id,
         roomId: room.id,
       });
 
-      const dateActivities = await createDateActivity();
-      const locals = await createLocal();
-      const activities = await createActivitiesWithConflict();
-      //activitieId: 1
+      await createDateActivity();
+      await createLocal();
+      await createActivitiesWithConflict();
       const otherUser = await createUser();
       await createBookingActivity(otherUser.id, 10);
 
@@ -302,7 +300,7 @@ describe("POST /activities", () => {
       const enrollment = await createEnrollmentWithAddress(user);
       const ticketType = await createTicketTypeWithHotel();
       const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-      const payment = await createPayment(ticket.id, ticketType.price);
+      await createPayment(ticket.id, ticketType.price);
 
       const createdHotel = await createHotel();
       const room = await createRoomWithHotelId(createdHotel.id);
@@ -311,10 +309,10 @@ describe("POST /activities", () => {
         roomId: room.id,
       });
 
-      const dateActivities = await createDateActivity();
-      const locals = await createLocal();
-      const activities = await createActivities();
-      //activitieId: 1
+      await createDateActivity();
+      await createLocal();
+      await createActivities();
+      
       const response = await server.post("/activities").set("Authorization", `Bearer ${token}`).send({ activitiesId: 1 });
 
       expect(response.statusCode).toBe(httpStatus.CREATED);
@@ -390,18 +388,18 @@ describe("GET /activities/:dateId", () => {
       const enrollment = await createEnrollmentWithAddress(user);
       const ticketType = await createTicketTypeWithHotel();
       const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-      const payment = await createPayment(ticket.id, ticketType.price);
+      await createPayment(ticket.id, ticketType.price);
 
       const createdHotel = await createHotel();
       const room = await createRoomWithHotelId(createdHotel.id);
-      const booking = await createBooking({
+      await createBooking({
         userId: user.id,
         roomId: room.id,
       });
 
-      const dateActivities = await createDateActivity();
-      const local = await createLocal();
-      const activities = await createActivities();
+      await createDateActivity();
+      await createLocal();
+      await createActivities();
 
       const response = await server.get("/activities/a").set("Authorization", `Bearer ${token}`);
 
@@ -414,18 +412,18 @@ describe("GET /activities/:dateId", () => {
       const enrollment = await createEnrollmentWithAddress(user);
       const ticketType = await createTicketTypeWithHotel();
       const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-      const payment = await createPayment(ticket.id, ticketType.price);
+      await createPayment(ticket.id, ticketType.price);
 
       const createdHotel = await createHotel();
       const room = await createRoomWithHotelId(createdHotel.id);
-      const booking = await createBooking({
+      await createBooking({
         userId: user.id,
         roomId: room.id,
       });
 
-      const dateActivities = await createDateActivity();
-      const local = await createLocal();
-      const activities = await createActivities();
+      await createDateActivity();
+      await createLocal();
+      await createActivities();
 
       const response = await server.get("/activities/1").set("Authorization", `Bearer ${token}`);
 
@@ -525,17 +523,17 @@ describe("GET /activities/:dateId", () => {
       const enrollment = await createEnrollmentWithAddress(user);
       const ticketType = await createTicketTypeWithHotel();
       const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-      const payment = await createPayment(ticket.id, ticketType.price);
+      await createPayment(ticket.id, ticketType.price);
 
       const createdHotel = await createHotel();
       const room = await createRoomWithHotelId(createdHotel.id);
-      const booking = await createBooking({
+      await createBooking({
         userId: user.id,
         roomId: room.id,
       });
 
-      const dateActivities = await createDateActivity();
-      const local = await createLocal();
+      await createDateActivity();
+      await createLocal();
 
       const response = await server.get("/activities/0").set("Authorization", `Bearer ${token}`);
 
@@ -599,20 +597,20 @@ describe("POST /activities", () => {
       const enrollment = await createEnrollmentWithAddress(user);
       const ticketType = await createTicketTypeWithHotel();
       const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-      const payment = await createPayment(ticket.id, ticketType.price);
+      await createPayment(ticket.id, ticketType.price);
 
       const createdHotel = await createHotel();
       const room = await createRoomWithHotelId(createdHotel.id);
-      const booking = await createBooking({
+      await createBooking({
         userId: user.id,
         roomId: room.id,
       });
 
-      const dateActivities = await createDateActivity();
-      const locals = await createLocal();
-      const activities = await createActivitiesWithConflict();
-      const bookingActivity = await createBookingActivity(user.id, 10);
-      //console.log(activities);
+      await createDateActivity();
+      await createLocal();
+      await createActivitiesWithConflict();
+      await createBookingActivity(user.id, 10);
+      
       const response = await server.post("/activities").set("Authorization", `Bearer ${token}`).send({ activitiesId: 11 });
 
       expect(response.statusCode).toBe(httpStatus.CONFLICT);
@@ -656,7 +654,7 @@ describe("POST /activities", () => {
       const dateActivities = await createDateActivity();
       const locals = await createLocal();
       const activities = await createActivitiesWithConflict();
-      //activitieId: 1
+      
       const otherUser = await createUser();
       await createBookingActivity(otherUser.id, 10);
 
@@ -720,7 +718,7 @@ describe("POST /activities", () => {
       const dateActivities = await createDateActivity();
       const locals = await createLocal();
       const activities = await createActivities();
-      //activitieId: 1
+      
       const response = await server.post("/activities").set("Authorization", `Bearer ${token}`).send({ activitiesId: 1 });
 
       expect(response.statusCode).toBe(httpStatus.CREATED);
