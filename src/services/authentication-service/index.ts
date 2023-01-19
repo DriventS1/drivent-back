@@ -23,8 +23,8 @@ async function signIn(params: SignInParams): Promise<SignInResult> {
 
 async function signInWithGitHub(params: SignInWithGitHubParams): Promise<SignInResult> {
   const { email } = params;
-
   const user = await getUserOrFail(email);
+  
   const token = await createSession(user.id);
   return {
     user: exclude(user, "password"),

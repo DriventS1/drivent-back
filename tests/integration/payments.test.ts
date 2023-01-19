@@ -202,7 +202,7 @@ describe("POST /payments/process", () => {
       const response = await server.post("/payments/process").set("Authorization", `Bearer ${token}`).send(body);
 
       expect(response.status).toEqual(httpStatus.OK);
-      expect(response.body).toEqual({
+      expect(response.body).toEqual([{
         id: expect.any(Number),
         ticketId: ticket.id,
         value: ticketType.price,
@@ -210,7 +210,15 @@ describe("POST /payments/process", () => {
         cardLastDigits: body.cardData.number.slice(-4),
         createdAt: expect.any(String),
         updatedAt: expect.any(String),
-      });
+      },
+      {
+        enrollmentId: expect.any(Number), 
+        id: expect.any(Number), 
+        status: "PAID", 
+        ticketTypeId: expect.any(Number), 
+        createdAt: expect.any(String), 
+        updatedAt: expect.any(String)
+      }]);
     });
 
     it("should insert a new payment in the database", async () => {

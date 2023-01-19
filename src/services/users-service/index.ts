@@ -19,7 +19,6 @@ export async function createUser({ email, password }: CreateUserParams): Promise
 
 export async function createUserWithGitHub({ email }: CreateUserWithGitHubParams): Promise<User> {
   await canEnrollOrFail();
-  
   await validateUniqueEmailOrFail(email);
   return userRepository.create({
     email,
